@@ -4,13 +4,15 @@ body{
     text-align:center;
     font-size: 1.5vw;
     background-image:url('background.png') ;
-    background-size:150vw 150vw;
+    background-size:100vw 10    0vw;
+    overflow: hidden;
 }
 
 .terminal{
     height:40vw;
     width:70vw;
-    overflow:auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     background-color:black;
     color:#0EFE41;
     font-family:monospace;
@@ -23,12 +25,50 @@ body{
     text-align: left;
     position: relative;
     top: 10vw;
+    scroll-behavior: smooth;
 
+    
 }
 .links{
-
-    color: blueviolet;
     font-size: 2vw;
-
 }
+
+/* Scroll animation */
+.scroll {
+    animation: move 1.5s infinite alternate;
+    text-align:left;
+    color:#0EFE41;
+}
+
+@keyframes move {
+    0% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(15px);
+    }
+}
+/* Scroll animation */
+
+
+
+/* unvisited link */
+    a:link {
+    color: lightskyblue;
+    text-decoration: none;
+  }
+  
+  /* visited link */
+  a:visited {
+    color: green;
+  }
+  
+  /* mouse over link */
+  a:hover {
+    color: blue;
+  }
+  
+  /* selected link */
+  a:active {
+    color: blue;}
 
