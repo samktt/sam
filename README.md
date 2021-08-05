@@ -1,2 +1,2 @@
 # sam
-Personal portfolio and blog
+Personal portfolio and blog: https://samktt.github.io/sam/
