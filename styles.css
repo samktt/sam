@@ -8,6 +8,8 @@ body{
     overflow: hidden;
 }
 
+
+
 .terminal{
     height:40vw;
     width:70vw;
@@ -26,8 +28,6 @@ body{
     position: relative;
     top: 10vw;
     scroll-behavior: smooth;
-
-    
 }
 .links{
     font-size: 2vw;
