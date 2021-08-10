@@ -2,16 +2,16 @@ body{
     margin:0;
     background: grey;
     text-align:center;
-    font-size: 1.5vw;
+    font-size: 15px;
     background-image:url('background.png') ;
-    background-size:100vw 10    0vw;
+    background-size:100vw 100vw;
     overflow: hidden;
 }
 
 
 
 .terminal{
-    height:40vw;
+    height:70vh;
     width:70vw;
     overflow-y: auto;
     overflow-x: hidden;
@@ -26,7 +26,6 @@ body{
     border-radius: 0vw 0vw 0.5vw 0.5vw;
     text-align: left;
     position: relative;
-    top: 10vw;
     scroll-behavior: smooth;
 }
 .links{
