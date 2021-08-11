@@ -1,13 +1,53 @@
 <!DOCTYPE html>
 <html style="scroll-behavior: smooth;">
-<title>W3.CSS Template</title>
+<title>RNA Velocity</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<body>
+<link rel="icon" href="favicon.png">
 
+<style>
+
+figcaption {
+  background-color: rgb(23 76 117);
+  color: white;
+  font-style: italic;
+  padding: 2px;
+  text-align: center;
+}
+img{
+max-width: 100%;
+}
+
+#toc_container {
+    background: #f9f9f9 none repeat scroll 0 0;
+    border: 1px solid #aaa;
+    display: table;
+    font-size: 95%;
+    margin-bottom: 1em;
+    padding: 20px;
+    width: auto;
+}
+
+#toc_container a {
+color: rgb(23 76 117);
+text-decoration: none;
+}
+.toc_title {
+    font-weight: 700;
+    text-align: center;
+}
+
+#toc_container li, #toc_container ul, #toc_container ul li{
+    list-style: outside none none !important;
+}
+
+</style>
+
+
+<body>
 <!-- Navbar (sit on top) -->
-<div class="w3-top">
+<div>
   <div class="w3-bar w3-white w3-wide w3-padding w3-card">
     <a href="#home" class="w3-bar-item w3-button"><b>Sam's</b> Blog</a>
     <!-- Float links to the right. Hide them on small screens -->
@@ -29,20 +69,76 @@
 
 <!-- Page content -->
 <div class="w3-content w3-padding" style="max-width:1564px">
-  
-  
-  <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16"><b> Obtaining Spliced and Unspliced RNA Counts</b></h3>
+<br>
+  <div id="toc_container">
+    <p class="toc_title">Contents</p>
+      <li><a href="#1">1 What is RNA Velocity</a>
+      <ul>
+        <li><a href="#1.1">1.1 mRNA lifecycle</a></li>
+        <li><a href="#1.2">1.2 Mathematical model</a></li>
+        <li><a href="#1.3">1.3 Solving the equations</a></li>
+      </ul>
+    </li>
+    <li><a href="#2">2 Obtaining Spliced and Unspliced RNA Counts</a></li>
+    <ul>
+      <li><a href="#2.1">2.1 Downloading data</a></li>
+      <li><a href="#2.2">2.2 Converting FASTQ files to RNA counts</a></li>
+    </ul>
+    <li><a href="#3">3 Performing RNA Velocity Analysis</a></li>
+    <li><a href="#4">4 Interpreting Case/Control Results</a></li>
 
-  <h4>Downloading data</h4>
+    </div>
+
+
+
+  <h3 id="1" class="w3-border-bottom w3-border-light-grey w3-padding-16"><b>What is RNA Velocity</b></h3>
+  
+  RNA velocity allows for the analysis of the change in the rate of gene expression in genes at a given time point given the spliced and unspliced mRNA counts. This enables cellular dynamics analysis without needing time-series single-cell RNA data.
+
+  <h4 id="1.1">mRNA lifecycle</h4>
+  Figure 1 shows the underlying model that is the basis for RNA velocity analysis. Essentially, the Lifecyle of a messenger RNA can be roughly explained by the transcription, splicing and degradation phases, where two main forms of mRNA, spliced and unspliced, can be found. At different points in time, different ratios of unspliced and spliced RNA could be present in a cell. Simply put, if there is more unspliced mRNA than spliced mRNA for a given gene, we can assume that this gene is about to be upregulated. We can therefore also assume that the gene is about to be downregulated if there is less unspliced mRNA than spliced mRNA.
+  
+  <figure class="imgContainer" style="margin: auto;  width:fit-content; padding:20px;">
+    <img src="model.png" style="border: 5px solid rgb(23 76 117);">
+    <figcaption>Figure 1 - mRNA lifecycle model</figcaption>
+  </figure>
+  This phenomenon is shown on the phase plot in figure 2, where a gene is in induction if the unspliced count is greater than the steady state slope. The opposite is also true, with repression of a gene. Using this model, and by obtaining this phase diagram for all genes, it would be possible to guess the future state of the cell.
+  
+  <figure class="imgContainer" style="margin: auto;  width:fit-content; width: 30%; padding:20px;">
+    <img src="phase.png" style="border: 5px solid rgb(23 76 117);">
+    <figcaption>Figure 2 - Unspliced vs spliced phase plot</figcaption>
+  </figure>
+
+  <h4 id="1.2">Mathematical model</h4>
+  This model of mRNA lifecycle can be explained mathematically as shown in figure 3. Two main ordinary differential equations can be used to describe the mRNA lifecycle. These two equations include the transcription rate alpha which can depend on the on or off transcription state in the cell, the splicing rate beta, which is the rate of transformation of unspliced to spliced mRNA (assumed constant), and a degradation rate constant gamma which represents the breakdown of the spliced mRNA by the cell. The first equation essentially states that the rate of change of the unspliced mRNA is increased by the transcription rate alpha and is decreased by the splicing rate beta which is in accordance with the model shown in figure 1. Based on the same model, the second equation shows that rate of change of spliced RNA is increased by splicing rate beta and decreased by the degradation rate gamma. 
+  
+  <figure class="imgContainer" style="margin: auto;  width:fit-content; width: 60%; padding:20px;">
+    <img src="math.png" style="border: 5px solid rgb(23 76 117);">
+    <figcaption>Figure 3 - Mathematical model</figcaption>
+  </figure>
+
+  <h4 id="1.3">Solving the equations</h4>
+  To obtain the RNA velocity (I.e., rate of change of spliced count) these two equations should be solved using a closed form solution. After inputting the unspliced and spliced count values obtained from single-cell RNA-seq data into our equations the remaining parameters can be estimated. More specifically, since the rate parameters (alpha, beta and gamma) and the latent variables (time and the on or off transcription state) can be inferred if either one is known, an expectation-maximization approach can be used. This is done by iteratively estimating rate parameters and the latent variables via maximum likelihood. 
+  This is shown here in the three phase plots included in figure 4, where each dot represents a cell and the x and y axis are the spliced and unspliced RNA counts. 
+  <br><br>
+  For an estimate of rate parameters shown on the far-right plot, time points can be assigned to each cell by minimizing the cell’s distance to the current phase trajectory, shown on the far-left. The transcriptional, on or off, states are found by associating a likelihood to the different segments on the trajectory, shown in the middle plot. Therefore, the green area would signify transcription being turned on, blue meaning turned off and the red area would represent the likelihood of a cell being in a steady state.
+  <figure class="imgContainer" style="margin: auto;  width:fit-content; width: 80%; padding:20px;">
+    <img src="maximizing.png" style="border: 5px solid rgb(23 76 117);">
+    <figcaption>Figure 4 - Expectation-maximization</figcaption>
+  </figure>
+
+  <h3 id="2" class="w3-border-bottom w3-border-light-grey w3-padding-16"><b>Obtaining Spliced and Unspliced RNA Counts</b></h3>
+
+  <h4 id="2.1">Downloading data</h4>
   The first step of any type of analysis involves obtaining the required datasets. To perform RNA velocity analysis, we need both spliced and unspliced RNA count matrices, which are not always readily available for download in various databanks. In single-cell RNA-seq studies, it is much more common to find and download FASTQ files. To download FASTQ files, often stored in servers located in foreign countries providing very slow download speeds, it is helpful to resort to a compute cluster where parallel jobs can be run, to save you time and compute resources.
   
-  <h4>Converting FASTQ files to RNA counts</h4>
+  <h4 id="2.2">Converting FASTQ files to RNA counts</h4>
   To transform FASQ files into spliced and unspliced count matrices, the STARsolo feature in the STAR program can be used. For this to work, the chemistry of the dataset should be known. Make sure that the FASTQ files are intact before proceeding with the conversion, as files could be not downloaded properly or completely.
   
-  <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16"><b>Performing RNA Velocity Analysis</b></h3>
+  <h3 id="3" class="w3-border-bottom w3-border-light-grey w3-padding-16"><b>Performing RNA Velocity Analysis</b></h3>
   To perform the RNA velocity analysis, we have developed the DeltaVelocyto R package. Although the scVelo package (current state-of-the-art velocity analysis package) offers many additional features, it lacks a basic feature to perform a differential dynamical analysis between two datasets (eg. case and control). This limitation is addressed in the DeltaVelocyto package in addition to increased speed and option for better scalability.
   
-  <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16"><b>Interpreting Case/Control Results</b></h3>
+  <h3 id="3" class="w3-border-bottom w3-border-light-grey w3-padding-16"><b>Interpreting Case/Control Results</b></h3>
    
   </div>
 
